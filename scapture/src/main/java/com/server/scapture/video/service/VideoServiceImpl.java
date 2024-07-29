@@ -116,6 +116,7 @@ public class VideoServiceImpl implements VideoService{
         List<Video> videoList = videoRepository.findTop10ByOrderByLikeCountDesc();
         // 1-1. data
         List<GetVideosByLikeCountResponseDto> data = new ArrayList<>();
+        int index = 1;
         for (Video video : videoList) {
             Schedule schedule = scheduleRepository.findById(video.getSchedule().getId()).get();
             Field field = fieldRepository.findById(schedule.getField().getId()).get();
@@ -123,7 +124,7 @@ public class VideoServiceImpl implements VideoService{
 
             GetVideosByLikeCountResponseDto responseDto = GetVideosByLikeCountResponseDto.builder()
                     .videoId(video.getId())
-                    .name(video.getName())
+                    .name("인기 동영상 " + String.format("%02d", index))
                     .image(video.getImage())
                     .stadiumName(stadium.getName())
                     .date(schedule.convertAll())
@@ -131,6 +132,7 @@ public class VideoServiceImpl implements VideoService{
                     .views(video.getViews())
                     .build();
             data.add(responseDto);
+            index++;
         }
         // 1-2. responseBody
         CustomAPIResponse<List<GetVideosByLikeCountResponseDto>> responseBody = CustomAPIResponse.createSuccess(HttpStatus.OK.value(), data, "인기 동영상 조회 완료되었습니다.");
