@@ -124,14 +124,23 @@ public class VideoServiceImpl implements VideoService{
             Field field = fieldRepository.findById(schedule.getField().getId()).get();
             Stadium stadium = stadiumRepository.findById(field.getStadium().getId()).get();
 
+            // 1-1-1. Stadium Dto
+            Optional<Image> foundImage = imageRepository.findFirst1ByStadium(stadium);
+            String image = null;
+            if(foundImage.isPresent()) image = foundImage.get().getImage();
+            GetStadiumNameAndImageDto stadiumDto = GetStadiumNameAndImageDto.builder()
+                    .name(stadium.getName())
+                    .image(image)
+                    .build();
+
             GetVideosByLikeCountResponseDto responseDto = GetVideosByLikeCountResponseDto.builder()
                     .videoId(video.getId())
                     .name("인기 동영상 " + String.format("%02d", index))
                     .image(video.getImage())
-                    .stadiumName(stadium.getName())
                     .date(schedule.convertAll())
                     .likeCount(video.getLikeCount())
                     .views(video.getViews())
+                    .stadium(stadiumDto)
                     .build();
             data.add(responseDto);
             index++;

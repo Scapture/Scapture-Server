@@ -8,12 +8,7 @@ import lombok.Setter;
 @Getter @Setter
 @AllArgsConstructor
 @Builder
-public class GetVideosByLikeCountResponseDto {
-    private Long videoId;
+public class GetStadiumNameAndImageDto {
     private String name;
     private String image;
-    private String date;
-    private int likeCount;
-    private int views;
-    private GetStadiumNameAndImageDto stadium;
 }
