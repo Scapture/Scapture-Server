@@ -14,4 +14,5 @@ public class GetStadiumInfoDto {
     private String location;
     private Boolean isOutside;
     private String parking;
+    private String image;
 }

@@ -3,6 +3,7 @@ package com.server.scapture.video.service;
 import com.server.scapture.domain.*;
 import com.server.scapture.download.repository.DownloadRepository;
 import com.server.scapture.field.repository.FieldRepository;
+import com.server.scapture.image.repository.ImageRepository;
 import com.server.scapture.oauth.jwt.JwtUtil;
 import com.server.scapture.schedule.repository.ScheduleRepository;
 import com.server.scapture.stadium.repository.StadiumRepository;
@@ -33,6 +34,7 @@ public class VideoServiceImpl implements VideoService{
     private final StoreRepository storeRepository;
     private final DownloadRepository downloadRepository;
     private final UserRepository userRepository;
+    private final ImageRepository imageRepository;
     private final JwtUtil jwtUtil;
     @Override
     public ResponseEntity<CustomAPIResponse<?>> createVideo(VideoCreateRequestDto videoCreateRequestDto) {
@@ -232,26 +234,31 @@ public class VideoServiceImpl implements VideoService{
         Schedule schedule = scheduleRepository.findById(video.getSchedule().getId()).get();
         Field field = fieldRepository.findById(schedule.getField().getId()).get();
         Stadium stadium = stadiumRepository.findById(field.getStadium().getId()).get();
-        // 4. 좋아요 여부 조회
+        // 4. 구장 이미지 1개 조회
+        Optional<Image> foundImage = imageRepository.findFirst1ByStadium(stadium);
+        String image = null;
+        if(foundImage.isPresent()) image = foundImage.get().getImage();
+        // 5. 좋아요 여부 조회
         boolean isLiked = false;
         if(user != null) isLiked = videoLikeRepository.findByVideoAndUser(video, user).isPresent();
-        // 5. 저장 여부 조회
+        // 6. 저장 여부 조회
         boolean isStored = false;
         if(user != null) isStored = storeRepository.findByVideoAndUser(video, user).isPresent();
-        // 6. 영상 조회 수 증가
+        // 7. 영상 조회 수 증가
         video.increaseViews();
         videoRepository.save(video);
-        // 7. Response
-        // 7-1. data
-        // 7-1-1. stadiumDto
+        // 8. Response
+        // 8-1. data
+        // 8-1-1. stadiumDto
         GetStadiumInfoDto stadiumDto = GetStadiumInfoDto.builder()
                 .name(stadium.getName())
                 .description(stadium.getDescription())
                 .location(stadium.getLocation())
                 .isOutside(stadium.getIsOutside())
                 .parking(stadium.getParking())
+                .image(image)
                 .build();
-        // 7-1-2. dto
+        // 8-1-2. dto
         GetVideoDetailResponseDto data = GetVideoDetailResponseDto.builder()
                 .name(video.getName())
                 .image(video.getImage())
@@ -262,7 +269,7 @@ public class VideoServiceImpl implements VideoService{
                 .likeCount(video.getLikeCount())
                 .stadium(stadiumDto)
                 .build();
-        // 7-2. responseBody
+        // 8-2. responseBody
         CustomAPIResponse<GetVideoDetailResponseDto> responseBody = CustomAPIResponse.createSuccess(HttpStatus.OK.value(), data, "영상 세부 조회 완료되었습니다.");
         return ResponseEntity
                 .status(HttpStatus.OK)
