@@ -259,6 +259,7 @@ public class VideoServiceImpl implements VideoService{
                 .isLiked(isLiked)
                 .isStored(isStored)
                 .views(video.getViews())
+                .likeCount(video.getLikeCount())
                 .stadium(stadiumDto)
                 .build();
         // 7-2. responseBody
