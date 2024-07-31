@@ -225,6 +225,7 @@ public class StadiumServiceImpl implements StadiumService{
                 .location(stadium.getLocation())
                 .isOutside(stadium.getIsOutside())
                 .parking(stadium.getParking())
+                .hours(stadium.getHours())
                 .images(images)
                 .fields(fields)
                 .build();

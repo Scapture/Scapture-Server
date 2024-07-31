@@ -18,6 +18,7 @@ public class GetStadiumDetailDto {
     private String location;
     private Boolean isOutside;
     private String parking;
+    private String hours;
     private List<SimpleImageResponseDto> images;
     private List<SimpleFieldResponseDto> fields;
 }
